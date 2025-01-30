@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
@@ -22,20 +23,52 @@ func main() {
 
 	list := flag.Bool("l", true, "List todo items")
 
-	removeItem := flag.String("r", "", "Remove a todo item")
+	// removeItem := flag.String("r", "", "Remove a todo item")
 	// parse
 	flag.Parse()
 	// args := flag.Args()
 
 	// write new todos
-	_, err = f.WriteString(*newItem)
-	if err != nil {
-		fmt.Println("Error writing to file:", err)
-		return
+	if *newItem != "" {
+		_, err = f.WriteString(*newItem)
+		if err != nil {
+			fmt.Println("Error writing to file:", err)
+			return
+		}
 	}
-	// fmt.Println("Args:", args)
-	fmt.Println("Todo Item:", *newItem)
-	fmt.Println("Todo Item:", *newItemNoTrunc)
-	fmt.Println("Listing items: ", *list)
-	fmt.Println("Removing item: ", *removeItem)
+
+	if *newItemNoTrunc != "" {
+		_, err = f.WriteString(*newItemNoTrunc)
+		if err != nil {
+			fmt.Println("Error writing to file:", err)
+			return
+		}
+	}
+
+	if *list == true {
+		f, err := os.Open("todo.txt")
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Println("File empty or does not exist")
+				return
+			}
+			log.Fatal(err)
+		}
+		defer f.Close()
+
+		fileScanner := bufio.NewScanner(f)
+
+		fileScanner.Split(bufio.ScanLines)
+		var fileLines []string
+
+		for fileScanner.Scan() {
+			fileLines = append(fileLines, fileScanner.Text())
+		}
+
+		f.Close()
+
+		for _, line := range fileLines {
+			fmt.Println(line)
+		}
+	}
 }
