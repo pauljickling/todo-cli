@@ -22,6 +22,7 @@ func main() {
 	newItemNoTrunc := flag.String("new", "", "Add a new todo item")
 
 	list := flag.Bool("l", true, "List todo items")
+	listNoTrunc := flag.Blool("list", true, "List todo items")
 
 	// removeItem := flag.String("r", "", "Remove a todo item")
 	// parse
@@ -45,7 +46,7 @@ func main() {
 		}
 	}
 
-	if *list == true {
+	if *list == true || *listNoTrunc == true {
 		f, err := os.Open("todo.txt")
 		if err != nil {
 			if os.IsNotExist(err) {
